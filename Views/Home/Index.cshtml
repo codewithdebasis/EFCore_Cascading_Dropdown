@@ -1,0 +1,54 @@
+﻿@model EFCore_Cascading_Dropdown.Models.Order
+
+@{
+    ViewData["Title"] = "Home Page";
+    var baseurl = ViewBag.BaseUrl;
+}
+
+<div class="text-center">
+    <h2>Cascading Dropdown Demo</h2>
+
+    <div class="row form-group">
+        <div class="col-md-2">
+            <label asp-for="CategoryId" class="control-label"></label>
+        </div>
+        <div class="col-md-4">
+            <select asp-for="CategoryId" class="form-control"
+                    asp-items="ViewBag.CategoryData"
+                    id="CategoryId" onchange="loadProduct(this)"></select>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="ProductId" class="control-label"></label>
+        </div>
+        <div class="col-md-4">
+            <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductData" id="ddlProductId"></select>
+        </div>
+    </div>
+</div>
+
+@section scripts
+    {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var a = 0;
+        });
+
+        function loadProduct(obj) {            
+            var value = obj.value;
+            var url = "@baseurl";
+
+            $.post(url + "Products/GetProductsByCategoryId", { categoryId: value }, function (data) {
+                debugger;
+                PopulateDropDown("#ddlProductId", data);
+            });
+        }
+
+        function PopulateDropDown(dropDownId, list, selectedId) {
+            $(dropDownId).empty();
+            $(dropDownId).append("<option>--Please Product--</option>")
+            $.each(list, function (index, row) {
+                $(dropDownId).append("<option value='" + row.id + "'>" + row.name + "</option>")
+            });
+        }
+    </script>
+}
